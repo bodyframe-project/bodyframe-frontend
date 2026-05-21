@@ -65,6 +65,42 @@ export function formatNumber(value, digits = 2) {
   return Number(value).toFixed(digits);
 }
 
+export function formatFrameCategory(category) {
+  const normalized = `${category ?? ""}`.toLowerCase();
+
+  if (normalized.includes("medium")) {
+    return "Orta yapi";
+  }
+
+  if (normalized.includes("small")) {
+    return "Ince yapi";
+  }
+
+  if (normalized.includes("large")) {
+    return "Iri yapi";
+  }
+
+  if (normalized.includes("normal")) {
+    return "Dengeli";
+  }
+
+  if (normalized.includes("alt")) {
+    return "Alt bant";
+  }
+
+  if (normalized.includes("ust")) {
+    return "Ust bant";
+  }
+
+  if (normalized.includes("geli")) {
+    return normalized.includes("alt")
+      ? "Alt bant"
+      : "Ust bant";
+  }
+
+  return category ?? "-";
+}
+
 export function toApiDateTime(dateValue) {
   if (!dateValue) {
     return null;
@@ -88,7 +124,35 @@ export function getCategoryTone(category) {
     return "warn";
   }
 
+  if (normalized.includes("geli")) {
+    return normalized.includes("alt") ? "warn" : "info";
+  }
+
   return "neutral";
+}
+
+export function getCategorySummary(category) {
+  const normalized = `${category ?? ""}`.toLowerCase();
+
+  if (normalized.includes("medium") || normalized.includes("normal")) {
+    return "Olcumler dengeli bir yapiya isaret ediyor. Takibi duzenli surdurmek yeterlidir.";
+  }
+
+  if (normalized.includes("small") || normalized.includes("ust")) {
+    return "Daha ince bir yapi goruluyor. Sonuc genel takip icinde degerlendirilmelidir.";
+  }
+
+  if (normalized.includes("large") || normalized.includes("alt")) {
+    return "Daha genis bir yapi goruluyor. Kilo ve boy takibiyle birlikte okunmasi daha sagliklidir.";
+  }
+
+  if (normalized.includes("geli")) {
+    return normalized.includes("alt")
+      ? "Sonuc alt banda yakin gorunuyor."
+      : "Sonuc ust banda yakin gorunuyor.";
+  }
+
+  return "Sonuc genel takip icinde degerlendirilmelidir.";
 }
 
 export function translateGender(gender) {
@@ -99,19 +163,27 @@ export function translateGender(gender) {
   }
 
   if (normalized === "female") {
-    return "Kiz";
+    return "Kadin";
   }
 
   return "Diger";
 }
 
 export function translateRole(role) {
+  if (role === "Admin") {
+    return "Admin";
+  }
+
   if (role === "Doctor") {
     return "Doktor";
   }
 
   if (role === "User") {
     return "Kullanici";
+  }
+
+  if (role === "Moderator") {
+    return "Moderator";
   }
 
   return role ?? "-";

@@ -8,11 +8,10 @@ const initialForm = {
   name: "",
   lastName: "",
   email: "",
+  nationalId: "",
   password: "",
   gender: "Male",
   dateOfBirth: "",
-  role: "User",
-  profileImageUrl: "",
 };
 
 export function RegisterPage() {
@@ -34,7 +33,7 @@ export function RegisterPage() {
         ...form,
         dateOfBirth: form.dateOfBirth || null,
         lastName: form.lastName || null,
-        profileImageUrl: form.profileImageUrl || null,
+        nationalId: form.nationalId,
       };
 
       const response = await authService.register(payload);
@@ -60,9 +59,6 @@ export function RegisterPage() {
           <p className="eyebrow">Kayit</p>
           <h2>Yeni BodyFrame hesabi olustur</h2>
         </div>
-        <p className="section-copy">
-          Kullanici veya doktor rolunde kaydolabilir, e-posta dogrulamasindan sonra panele gecebilirsin.
-        </p>
       </div>
 
       {message ? <InlineMessage tone="success">{message}</InlineMessage> : null}
@@ -111,6 +107,26 @@ export function RegisterPage() {
           </label>
 
           <label className="field">
+            <span>TC Kimlik No</span>
+            <input
+              type="text"
+              inputMode="numeric"
+              maxLength={11}
+              value={form.nationalId}
+              onChange={(event) =>
+                setForm((current) => ({
+                  ...current,
+                  nationalId: event.target.value.replace(/\D/g, "").slice(0, 11),
+                }))
+              }
+              placeholder="11 haneli TC"
+              required
+            />
+          </label>
+        </div>
+
+        <div className="dual-grid">
+          <label className="field">
             <span>Sifre</span>
             <input
               type="password"
@@ -122,9 +138,7 @@ export function RegisterPage() {
               required
             />
           </label>
-        </div>
 
-        <div className="triple-grid">
           <label className="field">
             <span>Cinsiyet</span>
             <select
@@ -134,48 +148,23 @@ export function RegisterPage() {
               }
             >
               <option value="Male">Erkek</option>
-              <option value="Female">Kiz</option>
+              <option value="Female">Kadin</option>
               <option value="Other">Diger</option>
-            </select>
-          </label>
-
-          <label className="field">
-            <span>Dogum Tarihi</span>
-            <input
-              type="date"
-              value={form.dateOfBirth}
-              onChange={(event) =>
-                setForm((current) => ({ ...current, dateOfBirth: event.target.value }))
-              }
-            />
-          </label>
-
-          <label className="field">
-            <span>Rol</span>
-            <select
-              value={form.role}
-              onChange={(event) =>
-                setForm((current) => ({ ...current, role: event.target.value }))
-              }
-            >
-              <option value="User">Kullanici</option>
-              <option value="Doctor">Doktor</option>
             </select>
           </label>
         </div>
 
         <label className="field">
-          <span>Profil Gorseli URL (opsiyonel)</span>
+          <span>Dogum Tarihi</span>
           <input
-            type="url"
-            value={form.profileImageUrl}
+            type="date"
+            value={form.dateOfBirth}
             onChange={(event) =>
               setForm((current) => ({
                 ...current,
-                profileImageUrl: event.target.value,
+                dateOfBirth: event.target.value,
               }))
             }
-            placeholder="https://..."
           />
         </label>
 

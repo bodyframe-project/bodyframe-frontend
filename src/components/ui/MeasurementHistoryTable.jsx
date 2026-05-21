@@ -47,7 +47,7 @@ export function MeasurementHistoryTable({ measurements, emptyText }) {
               <td>
                 {translateRole(measurement.recordedByRole)}
                 {measurement.recordedByName
-                  ? ` · ${measurement.recordedByName}`
+                  ? ` / ${measurement.recordedByName}`
                   : ""}
               </td>
             </tr>

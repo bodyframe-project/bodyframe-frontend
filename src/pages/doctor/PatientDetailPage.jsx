@@ -50,6 +50,7 @@ export function PatientDetailPage() {
           doctorService.getMyPatients(),
           doctorService.getPatientHistory(patientId),
         ]);
+
         if (!cancelled) {
           setPatient(
             location.state?.patient ??
@@ -131,7 +132,7 @@ export function PatientDetailPage() {
       const patientHistory = await doctorService.getPatientHistory(patientId);
       setHistory(patientHistory);
       setResult(nextResult);
-      setMessage("Hasta olcumu basariyla kaydedildi.");
+      setMessage("Olcum kaydedildi.");
       setForm(createInitialForm());
     } catch (submitError) {
       setError(submitError.message);
@@ -145,74 +146,72 @@ export function PatientDetailPage() {
       {message ? <InlineMessage tone="success">{message}</InlineMessage> : null}
       {error ? <InlineMessage tone="danger">{error}</InlineMessage> : null}
 
-      <section className="hero-panel compact">
-        <div>
+      <section className="surface-card patient-spotlight">
+        <div className="patient-spotlight-copy">
           <p className="eyebrow">Hasta Detayi</p>
           <h1>{patient?.name ?? "Hasta bilgisi yukleniyor"}</h1>
           <p>
-            {patient?.email ?? "Atanmis hasta kaydi"} · {translateGender(patient?.gender)} ·{" "}
-            {patient?.age ?? "-"} yas
+            {patient?.isDependentProfile
+              ? `Aile: ${patient?.parentDisplayName ?? "-"} / ${patient?.parentNationalId ?? "-"}`
+              : patient?.isDoctorManagedPatient
+                ? `Anne: ${patient?.motherName ?? "-"} / ${patient?.country ?? "-"}`
+                : patient?.email ?? "Atanmis hasta kaydi"}{" "}
+            / {translateGender(patient?.gender)} / {patient?.age ?? "-"} yas
           </p>
         </div>
-        <div className="hero-chip-group">
-          <span className="hero-chip">Toplam {patient?.totalMeasurements ?? history.length} olcum</span>
-          <span className="hero-chip">
-            Son tarih {patient?.lastMeasurementDate ? formatDate(patient.lastMeasurementDate) : "-"}
+
+        <div className="patient-spotlight-meta">
+          <span className="patient-spotlight-tag">
+            {patient?.totalMeasurements ?? history.length} olcum
+          </span>
+          <span className="patient-spotlight-tag">
+            {patient?.lastMeasurementDate
+              ? formatDate(patient.lastMeasurementDate)
+              : "Tarih yok"}
           </span>
         </div>
       </section>
 
       <section className="stat-grid">
-        <StatCard
-          label="Toplam Kayit"
-          value={loading ? "..." : history.length}
-          hint="Bu hasta icin kayitli olcum sayisi"
-        />
+        <StatCard label="Toplam Kayit" value={loading ? "..." : history.length} />
         <StatCard
           label="Son Kategori"
           value={history[0]?.frameCategory ?? patient?.lastFrameCategory ?? "-"}
-          hint="En son hesaplanan kategori"
         />
         <StatCard
           label="Yas / Cinsiyet"
-          value={`${patient?.age ?? "-"} · ${translateGender(patient?.gender)}`}
-          hint="Calculate endpoint'ine bu bilgiler gonderilir"
+          value={`${patient?.age ?? "-"} / ${translateGender(patient?.gender)}`}
           tone="highlight"
         />
       </section>
 
       <div className="content-grid">
         <MeasurementForm
-          title="Hasta adina olcum ekle"
-          description="Doktor endpoint'i ile secili hasta adina kayit acilir."
+          title="Yeni olcum ekle"
+          description="Secili hasta icin yeni kayit olusturun."
           values={form}
           onChange={handleChange}
           onPreview={handlePreview}
           onSubmit={handleSubmit}
           previewing={previewing}
           submitting={submitting}
-          submitLabel="Hasta Olcumunu Kaydet"
+          submitLabel="Hesapla ve Kaydet"
           previewLabel="Sonucu Onizle"
-          footerNote="Kayit yapan rol backend'de otomatik olarak Doctor seklinde isaretlenir."
         />
 
-        <MeasurementResultCard
-          result={result}
-          title="Hasta icin son onizleme"
-          description="Bu sonuc, secili hastanin yas ve cinsiyet bilgisiyle hesaplanir."
-        />
+        <MeasurementResultCard result={result} title="Son olcum sonucu" />
       </div>
 
       <MeasurementChart
         measurements={history}
-        title="Hasta trend grafigi"
-        description="Hasta olcumlerinin zaman icindeki frame index ve z-score degisimi."
+        title="Olcum egisi"
+        description="Kayitlar zaman sirasiyla gosterilir."
       />
 
       <section className="surface-card">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">Hasta Gecmisi</p>
+            <p className="eyebrow">Tum Olcumler</p>
             <h3>Olcum kayitlari</h3>
           </div>
         </div>
@@ -222,12 +221,12 @@ export function PatientDetailPage() {
         ) : history.length ? (
           <MeasurementHistoryTable
             measurements={history}
-            emptyText="Hasta adina kayit actiginizde burada listelenecek."
+            emptyText="Yeni olcum eklediginizde burada listelenecek."
           />
         ) : (
           <EmptyState
             title="Bu hasta icin olcum bulunmuyor"
-            description="Yeni olcum girildiginde grafik ve tablo otomatik guncellenecek."
+            description="Ilk kayittan sonra grafik ve tablo otomatik dolacak."
           />
         )}
       </section>

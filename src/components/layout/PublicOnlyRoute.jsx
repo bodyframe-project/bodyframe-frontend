@@ -9,6 +9,10 @@ export function PublicOnlyRoute({ children }) {
   }
 
   if (isAuthenticated) {
+    if (session?.role === "Admin") {
+      return <Navigate to="/app/admin" replace />;
+    }
+
     if (session?.role === "Doctor") {
       return <Navigate to="/app/patients" replace />;
     }

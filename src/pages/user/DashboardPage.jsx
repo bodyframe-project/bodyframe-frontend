@@ -3,14 +3,16 @@ import { MeasurementChart } from "../../components/charts/MeasurementChart";
 import { MeasurementForm } from "../../components/forms/MeasurementForm";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { InlineMessage } from "../../components/ui/InlineMessage";
+import { MeasurementGuideCards } from "../../components/ui/MeasurementGuideCards";
 import { MeasurementHistoryTable } from "../../components/ui/MeasurementHistoryTable";
 import { MeasurementResultCard } from "../../components/ui/MeasurementResultCard";
 import { StatCard } from "../../components/ui/StatCard";
 import { useAuth } from "../../context/AuthContext";
+import { normalizeCalculationResponse } from "../../lib/frameAnalysis";
 import {
   calculateAge,
   formatDate,
-  formatNumber,
+  formatFrameCategory,
   toApiDateTime,
   translateGender,
 } from "../../lib/formatters";
@@ -24,10 +26,6 @@ function createInitialForm() {
     wristWidth: "",
     measurementDate: new Date().toISOString().split("T")[0],
   };
-}
-
-function normalizeCalculationResponse(payload) {
-  return payload?.data ?? payload?.Data ?? payload;
 }
 
 function normalizeMeasurementPayload(form, userId) {
@@ -152,56 +150,45 @@ export function DashboardPage() {
 
   return (
     <div className="page-stack">
-      <section className="hero-panel">
-        <div>
-          <p className="eyebrow">Kisisel Takip</p>
-          <h1>
-            {profile?.name ? `${profile.name}, olcum trendlerin hazir.` : "Olcum paneli"}
-          </h1>
-          <p>
-            Yas {age} · {translateGender(profile?.gender)} · son kayitlarin API
-            uzerinden canli olarak listeleniyor.
-          </p>
-        </div>
-        <div className="hero-chip-group">
-          <span className="hero-chip">Chart.js trend analizi</span>
-          <span className="hero-chip">Frame index + z-score</span>
-          <span className="hero-chip">Backend ile tam uyumlu</span>
-        </div>
-      </section>
-
       {message ? <InlineMessage tone="success">{message}</InlineMessage> : null}
       {error ? <InlineMessage tone="danger">{error}</InlineMessage> : null}
+
+      <MeasurementChart
+        featured
+        eyebrow="Genel Bakis"
+        measurements={history}
+        title={
+          profile?.name
+            ? `${profile.name} icin olcum trendi`
+            : "Olcum trendi"
+        }
+        description="Kayitlariniz zaman sirasiyla gosterilir."
+      />
 
       <section className="stat-grid">
         <StatCard
           label="Toplam Kayit"
           value={loading ? "..." : history.length}
-          hint="Hesabina bagli tum olcumler"
         />
         <StatCard
           label="Son Kategori"
-          value={latestMeasurement?.frameCategory ?? "-"}
-          hint={
+          value={
             latestMeasurement
-              ? `${formatDate(latestMeasurement.measurementDate)} tarihli son kayit`
-              : "Henuz olcum eklenmedi"
+              ? formatFrameCategory(latestMeasurement.frameCategory)
+              : "-"
           }
         />
         <StatCard
-          label="Son Frame Index"
-          value={
-            latestMeasurement ? formatNumber(latestMeasurement.frameIndex) : "-"
-          }
-          hint="Son kayit icin hesaplanan oran"
+          label="Profil Ozeti"
+          value={`${age ?? "-"} / ${translateGender(profile?.gender)}`}
           tone="highlight"
         />
       </section>
 
       <div className="content-grid">
         <MeasurementForm
-          title="Frame index hesapla ve kaydet"
-          description="Onizleme frame index hesabini boy ve bilek genisligi ile yapar; kayit asamasinda tum olcumler backend tarafina gonderilir."
+          title="Yeni olcum gir"
+          description="Boy, kilo, bilek ve dirsek bilgilerini ekleyin."
           values={form}
           onChange={handleChange}
           onPreview={handlePreview}
@@ -210,27 +197,21 @@ export function DashboardPage() {
           submitting={submitting}
           submitLabel="Hesapla ve Kaydet"
           previewLabel="Sonucu Onizle"
-          footerNote="Cocuk kullanicilarda yas ve cinsiyet bilgisi profilinden, yetiskinlerde ise eriskin stratejisinden otomatik alinir."
         />
 
         <MeasurementResultCard
           result={result}
-          title="Son onizleme sonucu"
-          description="Bu kart backend calculate endpoint'inden donen sonuc ile uretilir."
+          title="Son olcum sonucu"
         />
       </div>
 
-      <MeasurementChart
-        measurements={history}
-        title="Frame index ve z-score trendi"
-        description="Mavi cizgi frame index, turkuaz cizgi ise z-score degisimini gosterir."
-      />
+      <MeasurementGuideCards compact title="Olcum rehberi" />
 
       <section className="surface-card">
         <div className="section-heading">
           <div>
             <p className="eyebrow">Olcum Gecmisi</p>
-            <h3>Kayitli olcumler</h3>
+            <h3>Tum kayitlar</h3>
           </div>
         </div>
 

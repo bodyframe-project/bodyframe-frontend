@@ -73,9 +73,6 @@ export function VerifyEmailPage() {
           <p className="eyebrow">E-posta Dogrulama</p>
           <h2>6 haneli kod ile hesabini etkinlestir</h2>
         </div>
-        <p className="section-copy">
-          Kayit tamamlandiysa, panele girebilmek icin e-posta dogrulamasini bitir.
-        </p>
       </div>
 
       {message ? <InlineMessage tone="success">{message}</InlineMessage> : null}

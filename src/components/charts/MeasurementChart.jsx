@@ -21,9 +21,23 @@ function getPointColor(category) {
   return "#64748b";
 }
 
-export function MeasurementChart({ measurements, title, description }) {
+export function MeasurementChart({
+  measurements,
+  title,
+  description,
+  featured = false,
+  eyebrow = "Trend Grafigi",
+}) {
   const canvasRef = useRef(null);
   const chartRef = useRef(null);
+  const sortedMeasurements = measurements?.length
+    ? [...measurements].sort(
+        (left, right) =>
+          new Date(left.measurementDate).getTime() -
+          new Date(right.measurementDate).getTime(),
+      )
+    : [];
+  const latestMeasurement = sortedMeasurements.at(-1);
 
   useEffect(() => {
     if (!canvasRef.current || !measurements?.length) {
@@ -82,6 +96,7 @@ export function MeasurementChart({ measurements, title, description }) {
         },
         plugins: {
           legend: {
+            display: !featured,
             position: "bottom",
           },
           tooltip: {
@@ -134,17 +149,30 @@ export function MeasurementChart({ measurements, title, description }) {
         chartRef.current = null;
       }
     };
-  }, [measurements]);
+  }, [featured, measurements]);
 
   return (
-    <section className="surface-card">
-      <div className="section-heading">
+    <section className={`surface-card chart-panel${featured ? " featured" : ""}`}>
+      <div className="section-heading chart-panel-heading">
         <div>
-          <p className="eyebrow">Trend Grafigi</p>
+          <p className="eyebrow">{eyebrow}</p>
           <h3>{title}</h3>
         </div>
-        {description ? <p className="section-copy">{description}</p> : null}
+        {featured ? (
+          <div className="chart-panel-summary">
+            <span>{measurements?.length ?? 0} kayit</span>
+            <strong>
+              {latestMeasurement
+                ? formatDate(latestMeasurement.measurementDate)
+                : "Veri bekleniyor"}
+            </strong>
+          </div>
+        ) : description ? (
+          <p className="section-copy">{description}</p>
+        ) : null}
       </div>
+
+      {featured && description ? <p className="chart-panel-copy">{description}</p> : null}
 
       {!measurements?.length ? (
         <EmptyState

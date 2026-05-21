@@ -5,8 +5,23 @@ export const doctorService = {
     return apiRequest("/doctorpatients/my-patients");
   },
 
-  getAvailablePatients() {
-    return apiRequest("/doctorpatients/available-patients");
+  searchAvailablePatients(nationalId) {
+    return apiRequest(
+      `/doctorpatients/available-patients?nationalId=${encodeURIComponent(nationalId)}`,
+    );
+  },
+
+  lookupFamilyByNationalId(nationalId) {
+    return apiRequest(
+      `/doctorpatients/family-lookup?nationalId=${encodeURIComponent(nationalId)}`,
+    );
+  },
+
+  createPatientRecord(payload) {
+    return apiRequest("/doctorpatients/patient-records", {
+      method: "POST",
+      body: payload,
+    });
   },
 
   assignPatient(patientId) {

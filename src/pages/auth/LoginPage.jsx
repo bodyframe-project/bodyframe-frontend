@@ -21,7 +21,12 @@ export function LoginPage() {
 
     try {
       const { profile } = await signIn(form);
-      const fallbackRoute = profile?.role === "Doctor" ? "/app/patients" : "/app";
+      const fallbackRoute =
+        profile?.role === "Admin"
+          ? "/app/admin"
+          : profile?.role === "Doctor"
+            ? "/app/patients"
+            : "/app";
       const from = location.state?.from?.pathname;
       navigate(from && from.startsWith("/app") ? from : fallbackRoute, {
         replace: true,
@@ -40,9 +45,6 @@ export function LoginPage() {
           <p className="eyebrow">Giris</p>
           <h2>BodyFrame hesabina giris yap</h2>
         </div>
-        <p className="section-copy">
-          Kayitli olcumlerini, grafiklerini ve doktor akislarini tek panelden ac.
-        </p>
       </div>
 
       {location.state?.notice ? (
@@ -85,7 +87,6 @@ export function LoginPage() {
 
       <div className="split-links">
         <Link to="/forgot-password">Sifremi unuttum</Link>
-        <Link to="/verify-email">E-posta dogrula</Link>
       </div>
     </div>
   );

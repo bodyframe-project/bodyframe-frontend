@@ -4,45 +4,28 @@ export function PublicLayout() {
   return (
     <div className="auth-shell">
       <section className="auth-hero">
-        <div className="auth-hero-badge">BodyFrame</div>
-        <h1>Frame index takibini modern ve temiz bir deneyime tasidik.</h1>
-        <p>
-          Kayit, giris, hesaplama, olcum gecmisi ve doktor-hasta akislarini tek
-          panelde yonetin.
-        </p>
-
-        <div className="auth-hero-grid">
-          <div className="auth-hero-card">
-            <span>Hizli giris</span>
-            <strong>JWT ve refresh token akisi</strong>
-          </div>
-          <div className="auth-hero-card">
-            <span>Takip paneli</span>
-            <strong>Chart.js ile trend analizi</strong>
-          </div>
-          <div className="auth-hero-card">
-            <span>Doktor modu</span>
-            <strong>Hasta atama ve olcum takibi</strong>
-          </div>
-          <div className="auth-hero-card">
-            <span>Guvenlik</span>
-            <strong>E-posta dogrulama ve sifre sifirlama</strong>
-          </div>
-        </div>
+        <h1>Olcumlerinizi kaydedin, yorumlayin ve takip edin.</h1>
       </section>
 
       <section className="auth-panel">
         <div className="auth-panel-top">
-          <NavLink to="/login" className="brand-link">
+          <NavLink to="/" className="brand-link">
             BodyFrame
           </NavLink>
           <div className="auth-links">
+            <NavLink to="/calculator">Hesaplayici</NavLink>
             <NavLink to="/login">Giris</NavLink>
             <NavLink to="/register">Kayit Ol</NavLink>
           </div>
         </div>
 
-        <Outlet />
+        <div className="auth-panel-shell">
+          <div className="auth-panel-intro">
+            <h2>Hesabiniza girin veya yeni bir profil olusturun</h2>
+          </div>
+
+          <Outlet />
+        </div>
       </section>
     </div>
   );

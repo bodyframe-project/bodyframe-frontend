@@ -1,31 +1,72 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { getInitials, translateGender } from "../../lib/formatters";
+import { SiteHeader } from "./SiteHeader";
 
 export function AppLayout() {
   const { profile, session, signOut } = useAuth();
+  const role = profile?.role ?? session?.role;
 
   const links = [
-    { to: "/app", label: "Olcum Paneli", end: true },
-    { to: "/app/profile", label: "Profil" },
+    {
+      to: "/app",
+      label: "Genel Bakis",
+      description: "Trendler ve son olcumler",
+      shortLabel: "GB",
+      end: true,
+    },
+    {
+      to: "/app/profile",
+      label: "Profil",
+      description: "Hesap ayarlari",
+      shortLabel: "PR",
+    },
+    {
+      to: "/calculator",
+      label: "Hesaplayici",
+      description: "Genel hesap alani",
+      shortLabel: "HS",
+    },
   ];
 
-  if ((profile?.role ?? session?.role) === "Doctor") {
-    links.splice(1, 0, { to: "/app/patients", label: "Hastalar" });
+  if (role === "Admin") {
+    links.splice(1, 0, {
+      to: "/app/admin",
+      label: "Kullanicilar",
+      description: "Yonetim paneli",
+      shortLabel: "YN",
+    });
+  }
+
+  if (role === "Doctor") {
+    links.splice(1, 0, {
+      to: "/app/patients",
+      label: "Hastalar",
+      description: "Takip ve atama",
+      shortLabel: "HT",
+    });
+  }
+
+  if (role === "User") {
+    links.splice(1, 0, {
+      to: "/app/children",
+      label: "Cocuklarim",
+      description: "Cocuk profilleri ve olcumler",
+      shortLabel: "CK",
+    });
   }
 
   return (
     <div className="app-shell">
       <aside className="sidebar">
         <div className="sidebar-brand">
-          <div className="sidebar-logo">BF</div>
+          <div className="sidebar-logo">ERU</div>
           <div>
             <strong>BodyFrame</strong>
-            <p>Olcum ve takip merkezi</p>
+            <p>Erciyes Universitesi</p>
           </div>
         </div>
 
-        <nav className="sidebar-nav">
+        <nav className="sidebar-nav" aria-label="Uygulama menusu">
           {links.map((link) => (
             <NavLink
               key={link.to}
@@ -35,40 +76,23 @@ export function AppLayout() {
                 `sidebar-link${isActive ? " active" : ""}`
               }
             >
-              {link.label}
+              <span className="sidebar-link-mark">{link.shortLabel}</span>
+              <span className="sidebar-link-label">{link.label}</span>
             </NavLink>
           ))}
         </nav>
 
-        <div className="sidebar-profile">
-          <div className="profile-avatar">
-            {getInitials(profile?.name, profile?.lastName)}
-          </div>
-          <div className="profile-copy">
-            <strong>
-              {profile?.name} {profile?.lastName ?? ""}
-            </strong>
-            <span>
-              {profile?.role ?? session?.role} · {translateGender(profile?.gender)}
-            </span>
-          </div>
-        </div>
-
-        <button type="button" className="button button-ghost" onClick={signOut}>
+        <button type="button" className="button button-ghost sidebar-signout" onClick={signOut}>
           Cikis Yap
         </button>
       </aside>
 
       <main className="page-shell">
-        <header className="page-header">
-          <div>
-            <p className="eyebrow">BodyFrame Panel</p>
-            <h2>Olcumlerinizi ve akislarinizi tek yerden yonetin</h2>
-          </div>
-          <div className="page-header-chip">
-            {profile?.email ?? "Hesap bilgisi yukleniyor"}
-          </div>
-        </header>
+        <SiteHeader
+          variant="app"
+          className="site-header-app"
+          links={links}
+        />
 
         <Outlet />
       </main>

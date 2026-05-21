@@ -12,17 +12,17 @@ export function MeasurementForm({
   footerNote,
 }) {
   return (
-    <section className="surface-card">
+    <section className="surface-card measurement-form-card">
       <div className="section-heading">
         <div>
-          <p className="eyebrow">Yeni Olcum</p>
+          <p className="eyebrow">Yeni Olcum Ekle</p>
           <h3>{title}</h3>
         </div>
         {description ? <p className="section-copy">{description}</p> : null}
       </div>
 
       <form
-        className="form-grid"
+        className="form-grid measurement-form-grid"
         onSubmit={(event) => {
           event.preventDefault();
           onSubmit();
